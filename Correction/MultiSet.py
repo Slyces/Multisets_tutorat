@@ -20,13 +20,12 @@ class MultiSet(object):
                     self.add(element)
 
     # =========================================================================
-    def add(self, element, n: int = 1):
-        if n <= 0:
-            return
-        if element in self:
-            self.__values[element] += n
-        else:
-            self.__values[element] = n
+    def add(self, element: object, n: int = 1) -> None:
+        if isinstance(n, int) and n > 0:
+            if element in self:
+                self.__values[element] += n
+            else:
+                self.__values[element] = n
 
     def remove(self, element, n=1):
         self.__values[element] += n
