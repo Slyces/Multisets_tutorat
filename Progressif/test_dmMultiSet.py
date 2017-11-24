@@ -1,5 +1,5 @@
 # Test des axiomes
-from Progressif.MultiSet2 import MultiSet
+from Progressif.MultiSet import MultiSet
 
 
 def test_add():
@@ -11,9 +11,9 @@ def test_add():
 
     # Axiomes
     m.add(4)
-    assert m.multiplicite(4) == 1
+    assert m.mt(4) == 1
     m.add('un mot', 145)
-    assert m.multiplicite('un mot') >= 145
+    assert m.mt('un mot') >= 145
 
 
 def test_repr():
@@ -42,12 +42,12 @@ def test_multiplicite():
     m = MultiSet()
     for i, lettre in enumerate(('a', 'b', 'c', 'd')):
         m.add(lettre, i)
-        assert m.multiplicite(lettre) == i
+        assert m.mt(lettre) == i
 
     m.add('o', 18)
-    assert m.multiplicite('o') == 18
+    assert m.mt('o') == 18
     m.add('o', 12)
-    assert m.multiplicite('o') == 30
+    assert m.mt('o') == 30
 
 def test_len():
     liste = [1, 2, 2, 4, 3, 5, 5, 7, 7, 8, 1, 2, 4, 5, 6, 7, 9]
@@ -90,7 +90,7 @@ def test_mul():
     C = A * B
     for x in (1, 2, 3, 4, 5, 7):
         if x == 1 or x == 3:
-            assert C.multiplicite(x) == 1
+            assert C.mt(x) == 1
         else:
             assert x not in C
 
@@ -98,13 +98,13 @@ def test_mul():
 
 def test_to_Dict():
     m = MultiSet([('a', 3), 7])
-    assert m.multiplicite('a') == 3
+    assert m.mt('a') == 3
     stockage = m.to_Dict()
     assert type(stockage) is dict
     assert stockage['a'] == 3
     assert stockage[7] == 1
     stockage['a'] = 9
-    assert m.multiplicite('a') == 3
+    assert m.mt('a') == 3
 
 
 if __name__ == '__main__':

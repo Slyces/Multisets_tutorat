@@ -44,6 +44,7 @@ class MultiSet(object):
         for item, number in self.__values.items():
             yield item, number
 
+    # =========================================================================
     def copy(self):
         return MultiSet(self.to_List())
 
