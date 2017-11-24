@@ -127,12 +127,13 @@ class MultiSet(object):
         assert type(m_set) is MultiSet
         new = MultiSet()
         for element in self:
-            new.add(element, self.mt(element) - m_set.multiplicity(element))
+            new.add(element, self.mt(element) - m_set.mt(element))
         return new
 
     # =========================================================================
     def __mod__(self, m_set: 'MultiSet') -> 'MultiSet':
         """Renvoie la différence symétrique entre deux MultiSet"""
+        assert type(m_set) is MultiSet
         new = MultiSet()
         for element in self:
             if element not in m_set:
@@ -146,31 +147,34 @@ class MultiSet(object):
         return new
 
     # =========================================================================
-    def __lt__(self, mset):
+    def __lt__(self, m_set: 'MultiSet') -> bool:
         """Vérifie si le premier MultiSet est inclus dans le second"""
+        assert type(m_set) is MultiSet
         for element in self:
-            if element not in mset or \
-                            self.mt(element) >= mset.multiplicity(element):
+            if element not in m_set or \
+                            self.mt(element) >= m_set.mt(element):
                 return False
         return True
 
     # =========================================================================
-    def __le__(self, mset):
+    def __le__(self, m_set):
         """Vérifie si le second MultiSet est inclus dans le premier"""
+        assert type(m_set) is MultiSet
         for element in self:
-            if element not in mset or \
-                            self.mt(element) > mset.multiplicity(element):
+            if element not in m_set or \
+                            self.mt(element) > m_set.multiplicity(element):
                 return False
         return True
 
     # =========================================================================
-    def __eq__(self, mset):
+    def __eq__(self, m_set):
         """Vérifie si les deux multisets ont les mêmes éléments"""
+        assert type(m_set) is MultiSet
         for element in self:
-            if self.mt(element) != mset.multiplicity(element):
+            if self.mt(element) != m_set.multiplicity(element):
                 return False
-        for element in mset:
-            if mset.multiplicity(element) != self.mt(element):
+        for element in m_set:
+            if m_set.multiplicity(element) != self.mt(element):
                 return False
 
     # =========================================================================
@@ -192,8 +196,10 @@ class MultiSet(object):
         return new_mset
 
     # =========================================================================
-    def sup(self, n=0):
+    def sup(self, n: int = 0) -> set:
         """Renvoie l'ensemble des éléments présents n fois ou plus"""
+        if type(n) is not int or n <= 0:
+            return set()
         support = set()
         for element in self:
             if self.mt(element) > n:
@@ -201,8 +207,10 @@ class MultiSet(object):
         return support
 
     # =========================================================================
-    def inf(self, n=0):
+    def inf(self, n: int = 0) -> set:
         """Renvoie l'ensemble des éléments présents n fois ou moins"""
+        if type(n) is not int or n <= 0:
+            return set()
         support = set()
         for element in self:
             if self.mt(element) < n:
@@ -210,8 +218,10 @@ class MultiSet(object):
         return support
 
     # =========================================================================
-    def cut(self, n=0):
+    def cut(self, n: int = 0) -> set:
         """Renvoie l'ensemble des éléments présents exactement n fois"""
+        if type(n) is not int or n <= 0:
+            return set()
         support = set()
         for element in self:
             if self.mt(element) == n:
@@ -221,7 +231,7 @@ class MultiSet(object):
     # =========================================================================
     def delete(self, objet: object, number: int) -> None:
         """Supprime n occurences d'un élément"""
-        if objet in self:
+        if objet in self and type(number) is int and number > 0:
             self.__stockage[objet] -= number
             if self.__stockage[objet] <= 0:
                 self.__stockage.pop(objet)
