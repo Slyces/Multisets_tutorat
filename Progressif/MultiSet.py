@@ -127,7 +127,7 @@ class MultiSet(object):
         assert type(m_set) is MultiSet
         new = MultiSet()
         for element in self:
-            new.add(element, self.mt(element) - mset.multiplicity(element))
+            new.add(element, self.mt(element) - m_set.multiplicity(element))
         return new
 
     # =========================================================================
@@ -135,14 +135,14 @@ class MultiSet(object):
         """Renvoie la différence symétrique entre deux MultiSet"""
         new = MultiSet()
         for element in self:
-            if element not in mset:
+            if element not in m_set:
                 new.add(element, abs(self.mt(element) -
-                                     mset.multiplicity(element)))
-        for element in mset:
+                                     m_set.mt(element)))
+        for element in m_set:
             if element not in self:
-                if element not in mset:
+                if element not in m_set:
                     new.add(element, abs(self.mt(element) -
-                                         mset.multiplicity(element)))
+                                         m_set.mt(element)))
         return new
 
     # =========================================================================
