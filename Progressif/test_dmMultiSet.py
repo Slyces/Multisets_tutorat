@@ -38,8 +38,8 @@ def test_len():
     liste = [1, 2, 2, 4, 3, 5, 5, 7, 7, 8, 1, 2, 4, 5, 6, 7, 9]
     m = MultiSet(liste)
     assert len(m) == len(liste)
-    m.add(4, 2)
-    m.add('brique', 3)
+    m.ajoute(4, 2)
+    m.ajoute('brique', 3)
     assert len(m) == len(liste) + 5
 
 
@@ -53,8 +53,8 @@ def test_iter():
     m = MultiSet()
     for rien in m:
         assert False
-    m.add('cobaye', 123)
-    m.add('sujet', 92)
+    m.ajoute('cobaye', 123)
+    m.ajoute('sujet', 92)
     cpt = 0
     for x in m:
         cpt += 1
@@ -64,7 +64,7 @@ def test_iter():
 def test_contains():
     m = MultiSet()
     assert 0 not in m
-    m.add('dix-sept')
+    m.ajoute('dix-sept')
     assert 17 not in m
     assert 'dix-sept' in m
 
@@ -78,7 +78,7 @@ def test_mul():
     assert C <= B
     for x in (1, 2, 3, 4, 5, 7):
         if x == 1 or x == 3:
-            assert C.mt(x) == 1
+            assert C.multiplicity(x) == 1
         else:
             assert x not in C
     for M in (A, B, C, vide):
@@ -211,34 +211,34 @@ def test_to_List():
 
 def test_to_Dict():
     m = MultiSet([('a', 3), 7])
-    assert m.mt('a') == 3
+    assert m.multiplicity('a') == 3
     stockage = m.to_Dict()
     assert type(stockage) is dict
     assert stockage['a'] == 3
     assert stockage[7] == 1
     stockage['a'] = 9
-    assert m.mt('a') == 3
+    assert m.multiplicity('a') == 3
 
 
 def test_multiplicite():
     m = MultiSet()
     for i, lettre in enumerate(('a', 'b', 'c', 'd')):
-        m.add(lettre, i)
-        assert m.mt(lettre) == i
+        m.ajoute(lettre, i)
+        assert m.multiplicity(lettre) == i
 
-    m.add('o', 18)
-    assert m.mt('o') == 18
-    m.add('o', 12)
-    assert m.mt('o') == 30
+    m.ajoute('o', 18)
+    assert m.multiplicity('o') == 18
+    m.ajoute('o', 12)
+    assert m.multiplicity('o') == 30
 
-    assert m.mt('test') == 0
-    assert m.mt({1: 2, 3: 4, 5: 6, 7: 8}) == 0
+    assert m.multiplicity('test') == 0
+    assert m.multiplicity({1: 2, 3: 4, 5: 6, 7: 8}) == 0
 
-    m.add('p', -5478)
-    assert m.mt('p') == 0
+    m.ajoute('p', -5478)
+    assert m.multiplicity('p') == 0
 
     m.delete('o', 165465)
-    assert m.mt('o') == 0
+    assert m.multiplicity('o') == 0
 
 
 def test_union():
@@ -253,14 +253,14 @@ def test_ajoute():
     m = MultiSet()
     # Signature
     for pas_un_nombre_valide in (-1, 0, 'a', [1, 2, 3]):
-        m.add('cobaye', pas_un_nombre_valide)
+        m.ajoute('cobaye', pas_un_nombre_valide)
         assert 'cobaye' not in m
 
     # Axiomes
-    m.add(4)
-    assert m.mt(4) == 1
-    m.add('un mot', 145)
-    assert m.mt('un mot') >= 145
+    m.ajoute(4)
+    assert m.multiplicity(4) == 1
+    m.ajoute('un mot', 145)
+    assert m.multiplicity('un mot') >= 145
 
     m2 = MultiSet()
 
@@ -268,8 +268,8 @@ def test_ajoute():
         for n in (1, 4, 2, 7, 1, 3, 8, 9, 4):
             element = random.randrange(4)
             m1 = m2.copy()
-            m2.add(element, n)
-            assert m2.mt(element) - m1.mt(element) == n
+            m2.ajoute(element, n)
+            assert m2.multiplicity(element) - m1.multiplicity(element) == n
             assert len(m1) < len(m2)
             assert m1 < m2
 
@@ -278,17 +278,17 @@ def test_supprime():
     param = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14}
     M = MultiSet(param)
     for element in M:
-        M.add(element, 2 + random.randrange(8))  # On ajoute de 2 à 9 éléments, donc
+        M.ajoute(element, 2 + random.randrange(8))  # On ajoute de 2 à 9 éléments, donc
         # chaque élément est présent de 3 à 10 fois
 
     M.delete(1, 20)
     assert 1 not in M
-    assert M.mt(1) == 0
+    assert M.multiplicity(1) == 0
 
     for element in param:
-        avant = M.mt(element)
+        avant = M.multiplicity(element)
         M.delete(element, 3)
-        apres = M.mt(element)
+        apres = M.multiplicity(element)
         assert avant == 0 or apres < avant
 
 
@@ -299,15 +299,15 @@ def test_sup():
     assert len(M.sup(3)) <= len(M)
     MSup = M.sup(5)
     for x in M.sup(5):
-        assert M.mt(x) > 5
+        assert M.multiplicity(x) > 5
     for x in M:
-        assert not(M.mt(x) > 5 and x not in MSup)
+        assert not(M.multiplicity(x) > 5 and x not in MSup)
 
     NSup = N.sup(5)
     for x in N.sup(5):
-        assert N.mt(x) > 5
+        assert N.multiplicity(x) > 5
     for x in N:
-        assert not (N.mt(x) > 5 and x not in NSup)
+        assert not (N.multiplicity(x) > 5 and x not in NSup)
 
 def test_inf():
     M = MultiSet([0, 7, 4, 'lokkzeeazdq', {'2165': 132, '_': int, 14: 46}, MultiSet(), ('tout', 12), (1, 7, 5, set())])
@@ -316,15 +316,15 @@ def test_inf():
     assert len(M.inf(3)) <= len(M)
     Minf = M.inf(9)
     for x in M.inf(9):
-        assert M.mt(x) < 9
+        assert M.multiplicity(x) < 9
     for x in M:
-        assert not(M.mt(x) < 9 and x not in Minf)
+        assert not(M.multiplicity(x) < 9 and x not in Minf)
 
     Ninf = N.inf(9)
     for x in N.inf(9):
-        assert N.mt(x) < 9
+        assert N.multiplicity(x) < 9
     for x in N:
-        assert not (N.mt(x) < 9 and x not in Ninf)
+        assert not (N.multiplicity(x) < 9 and x not in Ninf)
 
 
 def test_cut():
@@ -334,15 +334,15 @@ def test_cut():
     assert len(M.sup(6)) <= len(M)
     MSup = M.sup(7)
     for x in M.sup(7):
-        assert M.mt(x) > 7
+        assert M.multiplicity(x) > 7
     for x in M:
-        assert not(M.mt(x) > 7 and x not in MSup)
+        assert not(M.multiplicity(x) > 7 and x not in MSup)
 
     NSup = N.sup(7)
     for x in N.sup(7):
-        assert N.mt(x) > 7
+        assert N.multiplicity(x) > 7
     for x in N:
-        assert not (N.mt(x) > 7 and x not in NSup)
+        assert not (N.multiplicity(x) > 7 and x not in NSup)
 
 
 def test_elements():
@@ -358,7 +358,7 @@ def test_elements():
 
 if __name__ == '__main__':
     methodes_speciales = "init repr str len iter contains mul sub mod lt eq le"
-    methodes_normales = "to_Set to_List to_Dict multiplicite union intersection " \
+    methodes_normales = "to_Set to_List to_Dict multiplicity union intersection " \
                         "ajoute supprime sup inf cut elements "
 
     for nom in (methodes_normales + methodes_speciales).split(" "):

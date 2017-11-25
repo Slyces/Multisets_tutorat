@@ -9,7 +9,7 @@ class MultiSet(object):
             caracteres_ignores = 0
             for caractere in entrant:
                 if caractere.isalpha():
-                    self.add(caractere)
+                    self.ajoute(caractere)
                 else:
                     caracteres_ignores += 1
             print("Ignoring {} values out of {}".format(caracteres_ignores, len(entrant)))
@@ -17,20 +17,20 @@ class MultiSet(object):
             for element in entrant:
                 if isinstance(element, (list, tuple)):
                     if len(element) == 1:
-                        self.add(element[0])
+                        self.ajoute(element[0])
                     elif len(element) >= 2:
-                        self.add(element[0], element[1])
+                        self.ajoute(element[0], element[1])
                 else:
-                    self.add(element)
+                    self.ajoute(element)
         if isinstance(entrant, set):
             for element in entrant:
-                self.add(element)
+                self.ajoute(element)
         if isinstance(entrant, dict):
-            for key, number in entrant.items():
-                self.add(key, number)
+            for key, nombre in entrant.items():
+                self.ajoute(key, nombre)
 
     # =========================================================================
-    def add(self, objet: object, n: int = 1) -> None:
+    def ajoute(self, objet: object, n: int = 1) -> None:
         """Rajoute n fois l'élément object dans le MultiSet"""
         if isinstance(objet, collections.Hashable) and isinstance(n, int) and n > 0:
             if objet in self:
@@ -43,7 +43,7 @@ class MultiSet(object):
         """Renvoie le nombre total d'éléments du MultiSet"""
         somme = 0
         for element in self:
-            somme += self.mt(element)
+            somme += self.multiplicity(element)
         return somme
 
     # =========================================================================
@@ -65,8 +65,8 @@ class MultiSet(object):
         final = "{{\n"
         if len(self) == 0:
             return "{{}}"
-        for valeur, nombre in self.couples():
-            final += "  {}: {},\n".format(repr(valeur), repr(nombre))
+        for support, mult in self.couples():
+            final += "  {}: {},\n".format(repr(support), repr(mult))
         return final[:-2] + "}}"  # On supprime le dernier retour à la ligne et la virgule
 
     # =========================================================================
@@ -82,7 +82,7 @@ class MultiSet(object):
         return objet in self.__stockage.keys()
 
     # =========================================================================
-    def mt(self, item: object) -> int:
+    def multiplicity(self, item: object) -> int:
         """Renvoie le nombre d'occurences de l'élément dans le MultiSet"""
         if item in self:
             return self.__stockage[item]
@@ -101,18 +101,18 @@ class MultiSet(object):
     # =========================================================================
     def to_Set(self) -> set:
         """Renvoie un set contenant l'ensemble support de ce MultiSet"""
-        return_set = set()
+        nouveau_set = set()
         for element in self:  # Parcours le support
-            return_set.add(element)
-        return return_set
+            nouveau_set.add(element)
+        return nouveau_set
 
     # =========================================================================
     def to_List(self) -> list:
         """Renvoie une liste de couples (element, multiplicité)"""
-        return_list = []
+        nouvelle_liste = []
         for element, multiplicite in self.couples():
-            return_list.append((element, multiplicite))
-        return return_list
+            nouvelle_liste.append((element, multiplicite))
+        return nouvelle_liste
 
     # =========================================================================
     def to_Dict(self) -> dict:
@@ -123,47 +123,47 @@ class MultiSet(object):
     def __mul__(self, m_set: 'MultiSet') -> 'MultiSet':
         """Renvoie l'intersection entre deux MultiSet"""
         assert type(m_set) is MultiSet
-        new_mset = MultiSet()
+        nouveau_mset = MultiSet()
         for a in self:
             if a in m_set:
-                new_mset.add(a, min(self.mt(a),
-                                    m_set.mt(a)))
-        return new_mset
+                nouveau_mset.ajoute(a, min(self.multiplicity(a),
+                                       m_set.multiplicity(a)))
+        return nouveau_mset
 
     # =========================================================================
     def __add__(self, m_set: 'MultiSet') -> 'MultiSet':
         """Renvoie l'union entre deux MultiSet"""
         assert type(m_set) is MultiSet
-        new_mset = MultiSet()
+        nouveau_mset = MultiSet()
         for a in self:
-            new_mset.add(a, max(self.mt(a),
-                                m_set.mt(a)))
+            nouveau_mset.ajoute(a, max(self.multiplicity(a),
+                                   m_set.multiplicity(a)))
         for b in m_set:
             if b not in self:
-                new_mset.add(b, m_set.mt(b))
-        return new_mset
+                nouveau_mset.ajoute(b, m_set.multiplicity(b))
+        return nouveau_mset
 
     # =========================================================================
     def __sub__(self, m_set: 'MultiSet') -> 'MultiSet':
         """Renvoie la différence entre deux MultiSet"""
         assert type(m_set) is MultiSet
-        new = MultiSet()
+        nouveau_mset = MultiSet()
         for element in self:
-            new.add(element, self.mt(element) - m_set.mt(element))
-        return new
+            nouveau_mset.ajoute(element, self.multiplicity(element) - m_set.multiplicity(element))
+        return nouveau_mset
 
     # =========================================================================
     def __mod__(self, m_set: 'MultiSet') -> 'MultiSet':
         """Renvoie la différence symétrique entre deux MultiSet"""
         assert type(m_set) is MultiSet
-        new = MultiSet()
-        for element in self:
-            if element not in m_set:
-                new.add(element, self.mt(element))
-        for element in m_set:
-            if element not in self:
-                new.add(element, m_set.mt(element))
-        return new
+        nouveau_mset = MultiSet()
+        for a in self:
+            if a not in m_set:
+                nouveau_mset.ajoute(a, self.multiplicity(a))
+        for b in m_set:
+            if b not in self:
+                nouveau_mset.ajoute(b, m_set.multiplicity(b))
+        return nouveau_mset
 
     # =========================================================================
     def __lt__(self, m_set: 'MultiSet') -> bool:
@@ -171,7 +171,7 @@ class MultiSet(object):
         assert type(m_set) is MultiSet
         for element in m_set:
             if element not in self or \
-                            self.mt(element) < m_set.mt(element):
+                            self.multiplicity(element) < m_set.multiplicity(element):
                 return True
         return False
 
@@ -181,7 +181,7 @@ class MultiSet(object):
         assert type(m_set) is MultiSet
         for element in self:
             if element not in self or \
-                            self.mt(element) > m_set.mt(element):
+                            self.multiplicity(element) > m_set.multiplicity(element):
                 return False
         return True
 
@@ -190,32 +190,30 @@ class MultiSet(object):
         """Vérifie si les deux multisets ont les mêmes éléments"""
         assert type(m_set) is MultiSet
         for element in self:
-            temp1 = self.mt(element)
-            temp2 = m_set.mt(element)
-            if self.mt(element) != m_set.mt(element):
+            if self.multiplicity(element) != m_set.multiplicity(element):
                 return False
         for element in m_set:
-            if m_set.mt(element) != self.mt(element):
+            if m_set.multiplicity(element) != self.multiplicity(element):
                 return False
         return True
 
     # =========================================================================
     def union(self, *m_sets: tuple('MultiSet')) -> 'MultiSet':
         """Renvoie l'union entre n >= 1 MultiSets"""
-        new_mset = self
+        nouveau_mset = self.copy()
         for mSet in m_sets:
             assert isinstance(mSet, MultiSet)
-            new_mset += mSet
-        return new_mset
+            nouveau_mset += mSet
+        return nouveau_mset
 
     # =========================================================================
     def intersection(self, *m_sets: tuple('MultiSet')) -> 'MultiSet':
         """Renvoie l'intersection entre n >= 1 MultiSets"""
-        new_mset = self
+        nouveau_mset = self.copy()
         for mSet in m_sets:
             assert isinstance(mSet, MultiSet)
-            new_mset *= mSet
-        return new_mset
+            nouveau_mset *= mSet
+        return nouveau_mset
 
     # =========================================================================
     def sup(self, n: int = 0) -> set:
@@ -225,7 +223,7 @@ class MultiSet(object):
             return set()
         support = set()
         for element in self:
-            if self.mt(element) > n:
+            if self.multiplicity(element) > n:
                 support.add(element)
         return support
 
@@ -236,7 +234,7 @@ class MultiSet(object):
             return set()
         support = set()
         for element in self:
-            if self.mt(element) < n:
+            if self.multiplicity(element) < n:
                 support.add(element)
         return support
 
@@ -247,15 +245,15 @@ class MultiSet(object):
             return set()
         support = set()
         for element in self:
-            if self.mt(element) == n:
+            if self.multiplicity(element) == n:
                 support.add(element)
         return support
 
     # =========================================================================
-    def delete(self, objet: object, number: int) -> None:
+    def delete(self, objet: object, nombre: int) -> None:
         """Supprime n occurences d'un élément"""
-        if objet in self and type(number) is int and number > 0:
-            self.__stockage[objet] -= number
+        if objet in self and type(nombre) is int and nombre > 0:
+            self.__stockage[objet] -= nombre
             if self.__stockage[objet] <= 0:
                 self.__stockage.pop(objet)
 
@@ -264,7 +262,7 @@ class MultiSet(object):
         """Renvoie un itérateur sur les éléments du MultiSet"""
         liste = []
         for element in self:
-            for x in range(self.mt(element)):
+            for x in range(self.multiplicity(element)):
                 liste.append(x)
         return iter(liste)
 
