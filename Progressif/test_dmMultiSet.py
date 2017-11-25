@@ -2,6 +2,9 @@
 from Progressif.MultiSet import MultiSet
 
 
+def test_init():
+    assert False
+
 def test_add():
     m = MultiSet()
     # Signature
@@ -30,25 +33,6 @@ def test_str():
     assert str(b) == """{{\n  'a': 2}}"""
 
 
-def test_contains():
-    m = MultiSet()
-    assert 0 not in m
-    m.add('dix-sept')
-    assert 17 not in m
-    assert 'dix-sept' in m
-
-
-def test_multiplicite():
-    m = MultiSet()
-    for i, lettre in enumerate(('a', 'b', 'c', 'd')):
-        m.add(lettre, i)
-        assert m.mt(lettre) == i
-
-    m.add('o', 18)
-    assert m.mt('o') == 18
-    m.add('o', 12)
-    assert m.mt('o') == 30
-
 def test_len():
     liste = [1, 2, 2, 4, 3, 5, 5, 7, 7, 8, 1, 2, 4, 5, 6, 7, 9]
     m = MultiSet(liste)
@@ -56,6 +40,7 @@ def test_len():
     m.add(4, 2)
     m.add('brique', 3)
     assert len(m) == len(liste) + 5
+
 
 def test_iter():
     liste = [1, 2, 2, 4, 3, 5, 5, 7, 7, 8, 1, 2, 4, 5, 6, 7, 9]
@@ -74,15 +59,14 @@ def test_iter():
         cpt += 1
     assert cpt == 2
 
-def test_to_List():
-    m = MultiSet('ceci est un test')
-    liste = m.to_List()
-    cpt = 0
-    for x in m:
-        cpt += 1
-    assert len(liste) == cpt
-    liste.pop(0)
-    assert liste != m.to_List()
+
+def test_contains():
+    m = MultiSet()
+    assert 0 not in m
+    m.add('dix-sept')
+    assert 17 not in m
+    assert 'dix-sept' in m
+
 
 def test_mul():
     A = MultiSet((1, 3, 2, 3, 5, 4, 5))
@@ -94,6 +78,40 @@ def test_mul():
         else:
             assert x not in C
 
+
+def test_sub():
+    assert False
+
+
+def test_mod():
+    assert False
+
+
+def test_lt():
+    assert False
+
+
+def test_eq():
+    assert False
+
+
+def test_le():
+    assert False
+
+
+def test_to_Set():
+    assert False
+
+
+def test_to_List():
+    m = MultiSet('ceci est un test')
+    liste = m.to_List()
+    cpt = 0
+    for x in m:
+        cpt += 1
+    assert len(liste) == cpt
+    liste.pop(0)
+    assert liste != m.to_List()
 
 
 def test_to_Dict():
@@ -107,14 +125,66 @@ def test_to_Dict():
     assert m.mt('a') == 3
 
 
+def test_multiplicite():
+    m = MultiSet()
+    for i, lettre in enumerate(('a', 'b', 'c', 'd')):
+        m.add(lettre, i)
+        assert m.mt(lettre) == i
+
+    m.add('o', 18)
+    assert m.mt('o') == 18
+    m.add('o', 12)
+    assert m.mt('o') == 30
+
+
+def test_union():
+    assert False
+
+
+def test_intersection():
+    assert False
+
+
+def test_ajoute():
+    assert False
+
+
+def test_supprime():
+    assert False
+
+
+def test_sup():
+    assert False
+
+
+def test_inf():
+    assert False
+
+
+def test_cut():
+    assert False
+
+
+def test_elements():
+    assert False
+
+
 if __name__ == '__main__':
-    test_add()
-    test_str()
-    test_repr()
-    test_contains()
-    test_multiplicite()
-    test_iter()
-    test_len()
-    test_to_List()
-    test_to_Dict()
-    test_mul()
+    methodes_speciales = "init repr str len iter contains mul sub mod lt eq le"
+    methodes_normales = "to_Set to_List to_Dict multiplicite union intersection " \
+                        "ajoute supprime sup inf cut elements "
+
+    for nom in (methodes_normales + methodes_speciales).split(" "):
+        methode = eval("test_" + nom)
+        if nom in methodes_speciales:
+            nom = "_" + nom + "__"
+        print("=" * 80)
+        print("Test de {}".format(nom).center(80))
+        print("=" * 80)
+        try:
+            methode()
+            print("test assert passed")
+        except:
+            print("/!\\ /!\\ TEST FAILED /!\\ /!\\".center(80))
+        print("-" * 80)
+        print("\n")

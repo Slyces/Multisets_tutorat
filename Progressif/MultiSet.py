@@ -38,12 +38,18 @@ class MultiSet(object):
     # =========================================================================
     def __len__(self) -> int:
         """Renvoie le nombre total d'éléments du MultiSet"""
-        return sum(self.__stockage.values())
+        somme = 0
+        for element in self:
+            somme = self.mt(element)
+        return somme
 
     # =========================================================================
     def __iter__(self):
         """Parcourt l'ensemble support du MultiSet"""
-        return iter(self.__stockage.keys())
+        liste = []
+        for key in self.__stockage.keys():
+            liste.append(key)
+        return iter(liste)
 
     # =========================================================================
     def __repr__(self) -> str:
