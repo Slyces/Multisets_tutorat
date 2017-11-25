@@ -1,15 +1,17 @@
+import collections
+
 class MultiSet(object):
     def __init__(self, entrant: (set, list, tuple, dict, str) = None):
         """Constructeur du MultiSet"""
         self.__stockage = {}
         if isinstance(entrant, str):
-            ignored = 0
+            caracteres_ignores = 0
             for caractere in entrant:
                 if caractere.isalpha():
                     self.add(caractere)
                 else:
-                    ignored += 1
-            print("Ignoring {} values out of {}".format(ignored, len(entrant)))
+                    caracteres_ignores += 1
+            print("Ignoring {} values out of {}".format(caracteres_ignores, len(entrant)))
         if isinstance(entrant, (list, tuple)):
             for element in entrant:
                 if isinstance(element, (list, tuple)):
@@ -29,7 +31,7 @@ class MultiSet(object):
     # =========================================================================
     def add(self, objet: object, n: int = 1) -> None:
         """Rajoute n fois l'élément object dans le MultiSet"""
-        if isinstance(n, int) and n > 0:
+        if isinstance(objet, collections.Hashable) and isinstance(n, int) and n > 0:
             if objet in self:
                 self.__stockage[objet] += n
             else:
@@ -40,7 +42,7 @@ class MultiSet(object):
         """Renvoie le nombre total d'éléments du MultiSet"""
         somme = 0
         for element in self:
-            somme = self.mt(element)
+            somme += self.mt(element)
         return somme
 
     # =========================================================================
@@ -65,10 +67,16 @@ class MultiSet(object):
         return final[:-2] + "}}"  # On supprime le dernier retour à la ligne et la virgule
 
     # =========================================================================
-    def __contains__(self, item: object) -> bool:
+    def __contains__(self, objet: object) -> bool:
         """Renvoie vrai si la multiplicité de l'élément est supérieure à 0"""
         # Vrai car on ne peut pas avoir stockage[qqch] == 0
-        return item in self.__stockage.keys()
+        # mais on vérifie, on sait jamais
+        if not isinstance(objet, collections.Hashable):
+            return False
+        if objet in self.__stockage.keys():
+            if self.__stockage[objet] <= 0:
+                self.__stockage.pop(objet)
+        return objet in self.__stockage.keys()
 
     # =========================================================================
     def mt(self, item: object) -> int:
@@ -161,32 +169,35 @@ class MultiSet(object):
     def __lt__(self, m_set: 'MultiSet') -> bool:
         """Vérifie si le premier MultiSet est inclus dans le second"""
         assert type(m_set) is MultiSet
-        for element in self:
-            if element not in m_set or \
-                            self.mt(element) >= m_set.mt(element):
-                return False
-        return True
+        for element in m_set:
+            if element not in self or \
+                            self.mt(element) < m_set.mt(element):
+                return True
+        return False
 
     # =========================================================================
     def __le__(self, m_set):
         """Vérifie si le second MultiSet est inclus dans le premier"""
         assert type(m_set) is MultiSet
-        for element in self:
-            if element not in m_set or \
-                            self.mt(element) > m_set.multiplicity(element):
-                return False
-        return True
+        for element in m_set:
+            if element not in self or \
+                            self.mt(element) <= m_set.mt(element):
+                return True
+        return False
 
     # =========================================================================
     def __eq__(self, m_set):
         """Vérifie si les deux multisets ont les mêmes éléments"""
         assert type(m_set) is MultiSet
         for element in self:
-            if self.mt(element) != m_set.multiplicity(element):
+            temp1 = self.mt(element)
+            temp2 = m_set.mt(element)
+            if self.mt(element) != m_set.mt(element):
                 return False
         for element in m_set:
-            if m_set.multiplicity(element) != self.mt(element):
+            if m_set.mt(element) != self.mt(element):
                 return False
+        return True
 
     # =========================================================================
     def union(self, *m_sets: tuple('MultiSet')) -> 'MultiSet':
@@ -208,6 +219,7 @@ class MultiSet(object):
 
     # =========================================================================
     def sup(self, n: int = 0) -> set:
+
         """Renvoie l'ensemble des éléments présents n fois ou plus"""
         if type(n) is not int or n <= 0:
             return set()
@@ -250,9 +262,11 @@ class MultiSet(object):
     # =========================================================================
     def elements(self):
         """Renvoie un itérateur sur les éléments du MultiSet"""
+        liste = []
         for element in self:
             for x in range(self.mt(element)):
-                yield x
+                liste.append(x)
+        return iter(liste)
 
 
 if __name__ == '__main__':

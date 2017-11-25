@@ -3,7 +3,18 @@ from Progressif.MultiSet import MultiSet
 
 
 def test_init():
-    assert False
+    params = [
+        [0, 7, 4, 'lokkzeeazdq', {'2165': 132, '_': int, MultiSet(): 46}, ('tout', 12), (1, 7, 5, set())],
+        {7: 5, 'lokkzeeazdq': 98, 15: 'quatre-vingt-quinze', 32:7},
+        {1, 7, 8, 'test', 12, 4, 18},
+        "Ceci est un lorem ipsum sit dolor amet nec plus ultra hacked sans os. Avec windows 10. Donc avec os. Paradoxe.",
+        None
+    ]
+    for (par, i) in enumerate(params):
+        print(">> m" + str(i) + ") = Multiset(" + repr(par) + ")")
+        print(">> m" + str(i))
+        print(Multiset(par))
+
 
 def test_add():
     m = MultiSet()
@@ -24,6 +35,7 @@ def test_repr():
     assert repr(a) == 'MultiSet({1: 2, 3: 4, 7: 1})'
     b = MultiSet({'une chaine': 12})
     assert repr(b) == "MultiSet({'une chaine': 12})"
+    assert repr(MultiSet()) == "MultiSet({})"
 
 
 def test_str():
@@ -31,6 +43,7 @@ def test_str():
     assert str(a) == """{{\n  3: 4}}"""
     b = MultiSet({'a': 2})
     assert str(b) == """{{\n  'a': 2}}"""
+    assert str(MultiSet()) == """{{}}"""
 
 
 def test_len():
@@ -88,20 +101,80 @@ def test_mod():
 
 
 def test_lt():
-    assert False
+    parametre = [1, 2, 4, 4, 5, 7, 1, 4, 1, 2, 3, 5, 4, 7, 7, 8,
+                 8, 9, 6, 5, 4, 1, 2, 3, "ok", "j", {"test": 7}]
+
+    M1 = MultiSet(parametre)
+    M2 = MultiSet(parametre)
+    M3 = MultiSet(parametre[3:12])
+    M4 = MultiSet(parametre[7:12])
+
+    assert not M1 < M2
+    assert M4 < M3
+    assert M3 < M1
+
+    for x in (M1, M2, M3, M4):
+        for y in (M1, M2, M3, M4):
+            if x < y:
+                assert len(x) < len(y)
+            for z in (M1, M2, M3, M4):
+                if (x < y) and (y < z):
+                    assert x < z
 
 
 def test_eq():
-    assert False
+    parametre = [1, 2, 4, 4, 5, 7, 1, 4, 1, 2, 3, 5, 4, 7, 7, 8,
+                 8, 9, 6, 5, 4, 1, 2, 3, "ok", "j", {"test": 7}]
+
+    M1 = MultiSet(parametre)
+    M2 = MultiSet(parametre)
+    M3 = MultiSet(parametre[3:12])
+    M4 = MultiSet(parametre[7:12])
+    M5 = MultiSet(parametre)
+
+    assert M1 is not M2  # Pas le même objet Python
+    assert M1 == M2
+    assert M3 != M4
+    assert M1 != M3
+
+    for x in (M1, M2, M3, M4, M5):
+        for y in (M1, M2, M3, M4, M5):
+            if x == y:
+                assert len(x) == len(y)
+            for z in (M1, M2, M3, M4, M5):
+                if (x == y) and (y == z):
+                    assert x == z
 
 
 def test_le():
-    assert False
+    parametre = [1, 2, 4, 4, 5, 7, 1, 4, 1, 2, 3, 5, 4, 7, 7, 8,
+                 8, 9, 6, 5, 4, 1, 2, 3, "ok", "j", {"test": 7}]
+
+
+M1 = MultiSet(parametre)
+M2 = MultiSet(parametre)
+M3 = MultiSet(parametre[3:12])
+M4 = MultiSet(parametre[7:12])
+
+assert M1 <= M2
+assert M4 <= M3
+assert not M3 <= M4
+assert M3 <= M1
+
+for x in (M1, M2, M3, M4):
+    for y in (M1, M2, M3, M4):
+        if x <= y:
+            assert len(x) <= len(y)
+        for z in (M1, M2, M3, M4):
+            if (x <= y) and (y <= z):
+                assert x <= z
 
 
 def test_to_Set():
-    assert False
-
+    m = MultiSet([(1, 7), ('o', 2), (8, 23, 14, 7)])
+    assert m.to_Set() == {1, 'o', 8}
+    l = [1, 7, 4, 5, 6, 1, 1, 4, 7, 5, 4, 1, 2]
+    assert set(l) == MultiSet(l).to_Set()
 
 def test_to_List():
     m = MultiSet('ceci est un test')
@@ -135,6 +208,15 @@ def test_multiplicite():
     assert m.mt('o') == 18
     m.add('o', 12)
     assert m.mt('o') == 30
+
+    assert m.mt('test') == 0
+    assert m.mt({1: 2, 3: 4, 5: 6, 7: 8}) == 0
+
+    m.add('p', -5478)
+    assert m.mt('p') == 0
+
+    m.delete('o', 165465)
+    assert m.mt('o') == 0
 
 
 def test_union():
