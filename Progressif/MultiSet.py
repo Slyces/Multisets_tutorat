@@ -1,5 +1,6 @@
 import collections
 
+
 class MultiSet(object):
     def __init__(self, entrant: (set, list, tuple, dict, str) = None):
         """Constructeur du MultiSet"""
@@ -62,6 +63,8 @@ class MultiSet(object):
     def __str__(self) -> str:
         """Rajoute n fois l'élément object dans le MultiSet"""
         final = "{{\n"
+        if len(self) == 0:
+            return "{{}}"
         for valeur, nombre in self.couples():
             final += "  {}: {},\n".format(repr(valeur), repr(nombre))
         return final[:-2] + "}}"  # On supprime le dernier retour à la ligne et la virgule
@@ -133,11 +136,11 @@ class MultiSet(object):
         assert type(m_set) is MultiSet
         new_mset = MultiSet()
         for a in self:
-            new_mset.add(max(self.mt(a),
-                             m_set.mt(a)))
+            new_mset.add(a, max(self.mt(a),
+                                m_set.mt(a)))
         for b in m_set:
             if b not in self:
-                new_mset.add(m_set.mt(b))
+                new_mset.add(b, m_set.mt(b))
         return new_mset
 
     # =========================================================================
@@ -156,13 +159,10 @@ class MultiSet(object):
         new = MultiSet()
         for element in self:
             if element not in m_set:
-                new.add(element, abs(self.mt(element) -
-                                     m_set.mt(element)))
+                new.add(element, self.mt(element))
         for element in m_set:
             if element not in self:
-                if element not in m_set:
-                    new.add(element, abs(self.mt(element) -
-                                         m_set.mt(element)))
+                new.add(element, m_set.mt(element))
         return new
 
     # =========================================================================
@@ -179,11 +179,11 @@ class MultiSet(object):
     def __le__(self, m_set):
         """Vérifie si le second MultiSet est inclus dans le premier"""
         assert type(m_set) is MultiSet
-        for element in m_set:
+        for element in self:
             if element not in self or \
-                            self.mt(element) <= m_set.mt(element):
-                return True
-        return False
+                            self.mt(element) > m_set.mt(element):
+                return False
+        return True
 
     # =========================================================================
     def __eq__(self, m_set):

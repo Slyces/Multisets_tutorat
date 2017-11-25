@@ -1,10 +1,12 @@
 # Test des axiomes
+import random
+
 from Progressif.MultiSet import MultiSet
 
 
 def test_init():
     params = [
-        [0, 7, 4, 'lokkzeeazdq', {'2165': 132, '_': int, MultiSet(): 46}, ('tout', 12), (1, 7, 5, set())],
+        [0, 7, 4, 'lokkzeeazdq', {'2165': 132, '_': int, -0.214: 46}, MultiSet(), ('tout', 12), (1, 7, 5, set())],
         {7: 5, 'lokkzeeazdq': 98, 15: 'quatre-vingt-quinze', 32: 7},
         {1, 7, 8, 'test', 12, 4, 18},
         "Ceci est un lorem ipsum sit dolor amet nec plus ultra hacked sans os. Avec windows 10. Donc avec os. Paradoxe.",
@@ -14,20 +16,6 @@ def test_init():
         print(">> m" + str(i) + ") = Multiset(" + repr(par) + ")")
         print(">> m" + str(i))
         print(MultiSet(par))
-
-
-def test_add():
-    m = MultiSet()
-    # Signature
-    for pas_un_nombre_valide in (-1, 0, 'a', [1, 2, 3]):
-        m.add('cobaye', pas_un_nombre_valide)
-        assert 'cobaye' not in m
-
-    # Axiomes
-    m.add(4)
-    assert m.mt(4) == 1
-    m.add('un mot', 145)
-    assert m.mt('un mot') >= 145
 
 
 def test_repr():
@@ -82,22 +70,56 @@ def test_contains():
 
 
 def test_mul():
+    vide = MultiSet()
     A = MultiSet((1, 3, 2, 3, 5, 4, 5))
     B = MultiSet((1, 3, 7))
     C = A * B
+    assert C <= A
+    assert C <= B
     for x in (1, 2, 3, 4, 5, 7):
         if x == 1 or x == 3:
             assert C.mt(x) == 1
         else:
             assert x not in C
+    for M in (A, B, C, vide):
+        assert M * M == M
+        assert M * vide == vide
 
+
+def test_add():
+    A = MultiSet((1, 3, 2, 3, 5, 4, 5))
+    B = MultiSet((1, 1, 3, 7))
+    C = A + B
+    assert A <= C
+    assert B <= C
+    vide = MultiSet()
+    for M in (A, B, C, vide):
+        assert M + M == M
+        assert M + vide == M
 
 def test_sub():
-    assert False
+    A = MultiSet((1, 3, 6, 2, 5, 4, 5))
+    B = MultiSet((1, 3, 7, 45))
+    C = A - B
+    assert C <= A
+    vide = MultiSet()
+    for M in (A, B, C, vide):
+        assert M - M == vide
+        assert M - vide == M
 
 
 def test_mod():
-    assert False
+    A = MultiSet((1, 3, 6, 2, 5, 4, 5))
+    B = MultiSet((1, 3, 7, 45))
+    C = A % B
+    D = (A - B) + (B - A)
+    E = (A + B) - (A * B)
+    assert C == D
+    assert D == E
+    vide = MultiSet()
+    for M in (A, B, C, vide):
+        assert M % M == vide
+        assert M % vide == M
 
 
 def test_lt():
@@ -228,27 +250,110 @@ def test_intersection():
 
 
 def test_ajoute():
-    assert False
+    m = MultiSet()
+    # Signature
+    for pas_un_nombre_valide in (-1, 0, 'a', [1, 2, 3]):
+        m.add('cobaye', pas_un_nombre_valide)
+        assert 'cobaye' not in m
+
+    # Axiomes
+    m.add(4)
+    assert m.mt(4) == 1
+    m.add('un mot', 145)
+    assert m.mt('un mot') >= 145
+
+    m2 = MultiSet()
+
+    for i in range(20):
+        for n in (1, 4, 2, 7, 1, 3, 8, 9, 4):
+            element = random.randrange(4)
+            m1 = m2.copy()
+            m2.add(element, n)
+            assert m2.mt(element) - m1.mt(element) == n
+            assert len(m1) < len(m2)
+            assert m1 < m2
 
 
 def test_supprime():
-    assert False
+    param = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14}
+    M = MultiSet(param)
+    for element in M:
+        M.add(element, 2 + random.randrange(8))  # On ajoute de 2 à 9 éléments, donc
+        # chaque élément est présent de 3 à 10 fois
+
+    M.delete(1, 20)
+    assert 1 not in M
+    assert M.mt(1) == 0
+
+    for element in param:
+        avant = M.mt(element)
+        M.delete(element, 3)
+        apres = M.mt(element)
+        assert avant == 0 or apres < avant
 
 
 def test_sup():
-    assert False
+    M = MultiSet([0, 7, 4, 'lokkzeeazdq', {'2165': 132, '_': int, "o": 46}, MultiSet(), ('tout', 12), (1, 7, 5, set())])
+    N = MultiSet(
+        "Ceci est un lorem ipsum sit dolor amet nec plus ultra hacked sans os. Avec windows 10. Donc il y a 1 os. Mé non. Paradoxe.")
+    assert len(M.sup(3)) <= len(M)
+    MSup = M.sup(5)
+    for x in M.sup(5):
+        assert M.mt(x) > 5
+    for x in M:
+        assert not(M.mt(x) > 5 and x not in MSup)
 
+    NSup = N.sup(5)
+    for x in N.sup(5):
+        assert N.mt(x) > 5
+    for x in N:
+        assert not (N.mt(x) > 5 and x not in NSup)
 
 def test_inf():
-    assert False
+    M = MultiSet([0, 7, 4, 'lokkzeeazdq', {'2165': 132, '_': int, 14: 46}, MultiSet(), ('tout', 12), (1, 7, 5, set())])
+    N = MultiSet(
+        "Ceci est un lorem ipsum sit dolor amet nec plus ultra hacked sans os. Avec windows 10. Donc il y a 1 os. Mé non. Paradoxe.")
+    assert len(M.inf(3)) <= len(M)
+    Minf = M.inf(9)
+    for x in M.inf(9):
+        assert M.mt(x) < 9
+    for x in M:
+        assert not(M.mt(x) < 9 and x not in Minf)
+
+    Ninf = N.inf(9)
+    for x in N.inf(9):
+        assert N.mt(x) < 9
+    for x in N:
+        assert not (N.mt(x) < 9 and x not in Ninf)
 
 
 def test_cut():
-    assert False
+    M = MultiSet([0, 7, 4, 'lokkzeeazdq', {'2165': 132, '_': int, 654: 46}, MultiSet(), ('tout', 12), (1, 7, 5, set())])
+    N = MultiSet(
+        "Ceci est un lorem ipsum sit dolor amet nec plus ultra hacked sans os. Avec windows 10. Donc il y a 1 os. Mé non. Paradoxe.")
+    assert len(M.sup(6)) <= len(M)
+    MSup = M.sup(7)
+    for x in M.sup(7):
+        assert M.mt(x) > 7
+    for x in M:
+        assert not(M.mt(x) > 7 and x not in MSup)
+
+    NSup = N.sup(7)
+    for x in N.sup(7):
+        assert N.mt(x) > 7
+    for x in N:
+        assert not (N.mt(x) > 7 and x not in NSup)
 
 
 def test_elements():
-    assert False
+    M = MultiSet([0, 7, 4, 'lokkzeeazdq', {'2165': 132, '_': int, 4654: 46}, MultiSet(), ('tout', 12), (1, 7, 5, set())])
+    N = MultiSet(
+        "Ceci est un lorem ipsum sit dolor amet nec plus ultra hacked sans os. Avec windows 10. Donc il y a 1 os. Mé non. Paradoxe.")
+    cpt = 0
+    for x in M.elements():
+        cpt += 1
+    assert cpt == len(M)
+
 
 
 if __name__ == '__main__':
