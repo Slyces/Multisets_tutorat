@@ -60,7 +60,7 @@ class MultiSet(object):
     def __str__(self) -> str:
         """Rajoute n fois l'élément object dans le MultiSet"""
         final = "{{\n"
-        for valeur, nombre in self.__stockage.items():
+        for valeur, nombre in self.couples():
             final += "  {}: {},\n".format(repr(valeur), repr(nombre))
         return final[:-2] + "}}"  # On supprime le dernier retour à la ligne et la virgule
 
@@ -83,6 +83,11 @@ class MultiSet(object):
         return MultiSet(self.to_Dict())
 
     # =========================================================================
+    def couples(self):
+        """Renvoie un itérateur sur les couples (élément, multiplicité)"""
+        return self.__stockage.items()
+
+    # =========================================================================
     def to_Set(self) -> set:
         """Renvoie un set contenant l'ensemble support de ce MultiSet"""
         return_set = set()
@@ -94,7 +99,7 @@ class MultiSet(object):
     def to_List(self) -> list:
         """Renvoie une liste de couples (element, multiplicité)"""
         return_list = []
-        for element, multiplicite in self.__stockage.items():
+        for element, multiplicite in self.couples():
             return_list.append((element, multiplicite))
         return return_list
 
