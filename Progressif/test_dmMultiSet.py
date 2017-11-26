@@ -12,8 +12,10 @@ def test_init():
         "Ceci est un lorem ipsum sit dolor amet nec plus ultra hacked sans os. Avec windows 10. Donc avec os. Paradoxe.",
         None
     ]
-    for (par, i) in enumerate(params):
-        print(">> m" + str(i) + ") = Multiset(" + repr(par) + ")")
+    i = 0
+    for par in params:
+        i += 1
+        print(">> m" + str(i) + " = Multiset(" + repr(par) + ")")
         print(">> m" + str(i))
         print(MultiSet(par))
 
@@ -242,11 +244,32 @@ def test_multiplicite():
 
 
 def test_union():
-    assert False
+    vide = MultiSet()
+    multisets = []
 
+    for i in range(30):
+        param = [random.randrange(100) for i in range(10 + random.randrange(90))]
+        multisets.append(MultiSet(param))
+    union = multisets[0].union(*multisets[1:])
+    assert vide.union(*multisets) == union
+    assert len(union) >= max([len(x) for x in multisets])
+    for mset in multisets:
+        for x in mset:
+            assert x in union
 
 def test_intersection():
-    assert False
+    vide = MultiSet()
+    multisets = []
+
+    for i in range(30):
+        param = [random.randrange(100) for i in range(10 + random.randrange(90))]
+        multisets.append(MultiSet(param))
+    assert vide.intersection(*multisets) == vide
+    inter = multisets[0].intersection(*multisets[1:])
+    assert len(inter) <= min([len(x) for x in multisets])
+    for x in inter:
+        for mset in multisets:
+            assert x in mset
 
 
 def test_ajoute():
