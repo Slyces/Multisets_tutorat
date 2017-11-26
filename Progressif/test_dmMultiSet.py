@@ -239,7 +239,7 @@ def test_multiplicite():
     m.ajoute('p', -5478)
     assert m.multiplicity('p') == 0
 
-    m.delete('o', 165465)
+    m.supprime('o', 165465)
     assert m.multiplicity('o') == 0
 
 
@@ -304,13 +304,13 @@ def test_supprime():
         M.ajoute(element, 2 + random.randrange(8))  # On ajoute de 2 à 9 éléments, donc
         # chaque élément est présent de 3 à 10 fois
 
-    M.delete(1, 20)
+    M.supprime(1, 20)
     assert 1 not in M
     assert M.multiplicity(1) == 0
 
     for element in param:
         avant = M.multiplicity(element)
-        M.delete(element, 3)
+        M.supprime(element, 3)
         apres = M.multiplicity(element)
         assert avant == 0 or apres < avant
 

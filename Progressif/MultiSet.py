@@ -5,14 +5,14 @@ class MultiSet(object):
     def __init__(self, entrant: (set, list, tuple, dict, str) = None):
         """Constructeur du MultiSet"""
         self.__stockage = {}
-        if isinstance(entrant, str):
+        if isinstance(entrant, str):  # 1
             caracteres_ignores = 0
-            for caractere in entrant:
-                if caractere.isalpha():
-                    self.ajoute(caractere)
+            for caractere in entrant:  # n
+                if caractere.isalpha():  # 1
+                    self.ajoute(caractere)  # 1
                 else:
-                    caracteres_ignores += 1
-            print("Ignoring {} values out of {}".format(caracteres_ignores, len(entrant)))
+                    caracteres_ignores += 1  # 1
+            print("Ignoring {} values out of {}".format(caracteres_ignores, len(entrant)))  # 1
         if isinstance(entrant, (list, tuple)):
             for element in entrant:
                 if isinstance(element, (list, tuple)):
@@ -30,13 +30,13 @@ class MultiSet(object):
                 self.ajoute(key, nombre)
 
     # =========================================================================
-    def ajoute(self, objet: object, n: int = 1) -> None:
+    def ajoute(self, element: object, n: int = 1) -> None:
         """Rajoute n fois l'élément object dans le MultiSet"""
-        if isinstance(objet, collections.Hashable) and isinstance(n, int) and n > 0:
-            if objet in self:
-                self.__stockage[objet] += n
-            else:
-                self.__stockage[objet] = n
+        if isinstance(element, collections.Hashable) and isinstance(n, int) and n > 0:  # 1
+            if element in self:  # 1
+                self.__stockage[element] += n  # 1
+            else:  # 1
+                self.__stockage[element] = n  # 1
 
     # =========================================================================
     def __len__(self) -> int:
@@ -70,22 +70,22 @@ class MultiSet(object):
         return final[:-2] + "}}"  # On supprime le dernier retour à la ligne et la virgule
 
     # =========================================================================
-    def __contains__(self, objet: object) -> bool:
+    def __contains__(self, element: object) -> bool:
         """Renvoie vrai si la multiplicité de l'élément est supérieure à 0"""
         # Vrai car on ne peut pas avoir stockage[qqch] == 0
         # mais on vérifie, on sait jamais
-        if not isinstance(objet, collections.Hashable):
+        if not isinstance(element, collections.Hashable):
             return False
-        if objet in self.__stockage.keys():
-            if self.__stockage[objet] <= 0:
-                self.__stockage.pop(objet)
-        return objet in self.__stockage.keys()
+        if element in self.__stockage.keys():
+            if self.__stockage[element] <= 0:
+                self.__stockage.pop(element)
+        return element in self.__stockage.keys()
 
     # =========================================================================
-    def multiplicity(self, item: object) -> int:
+    def multiplicity(self, element: object) -> int:
         """Renvoie le nombre d'occurences de l'élément dans le MultiSet"""
-        if item in self:
-            return self.__stockage[item]
+        if element in self:
+            return self.__stockage[element]
         return 0
 
     # =========================================================================
@@ -127,7 +127,7 @@ class MultiSet(object):
         for a in self:
             if a in m_set:
                 nouveau_mset.ajoute(a, min(self.multiplicity(a),
-                                       m_set.multiplicity(a)))
+                                           m_set.multiplicity(a)))
         return nouveau_mset
 
     # =========================================================================
@@ -137,7 +137,7 @@ class MultiSet(object):
         nouveau_mset = MultiSet()
         for a in self:
             nouveau_mset.ajoute(a, max(self.multiplicity(a),
-                                   m_set.multiplicity(a)))
+                                       m_set.multiplicity(a)))
         for b in m_set:
             if b not in self:
                 nouveau_mset.ajoute(b, m_set.multiplicity(b))
@@ -201,18 +201,18 @@ class MultiSet(object):
     def union(self, *m_sets: tuple('MultiSet')) -> 'MultiSet':
         """Renvoie l'union entre n >= 1 MultiSets"""
         nouveau_mset = self.copy()
-        for mSet in m_sets:
-            assert isinstance(mSet, MultiSet)
-            nouveau_mset += mSet
+        for mset in m_sets:
+            assert isinstance(mset, MultiSet)
+            nouveau_mset += mset
         return nouveau_mset
 
     # =========================================================================
     def intersection(self, *m_sets: tuple('MultiSet')) -> 'MultiSet':
         """Renvoie l'intersection entre n >= 1 MultiSets"""
         nouveau_mset = self.copy()
-        for mSet in m_sets:
-            assert isinstance(mSet, MultiSet)
-            nouveau_mset *= mSet
+        for mset in m_sets:
+            assert isinstance(mset, MultiSet)
+            nouveau_mset *= mset
         return nouveau_mset
 
     # =========================================================================
@@ -250,12 +250,12 @@ class MultiSet(object):
         return support
 
     # =========================================================================
-    def delete(self, objet: object, nombre: int) -> None:
+    def supprime(self, element: object, nombre: int) -> None:
         """Supprime n occurences d'un élément"""
-        if objet in self and type(nombre) is int and nombre > 0:
-            self.__stockage[objet] -= nombre
-            if self.__stockage[objet] <= 0:
-                self.__stockage.pop(objet)
+        if element in self and type(nombre) is int and nombre > 0:
+            self.__stockage[element] -= nombre
+            if self.__stockage[element] <= 0:
+                self.__stockage.pop(element)
 
     # =========================================================================
     def elements(self):
@@ -263,7 +263,7 @@ class MultiSet(object):
         liste = []
         for element in self:
             for x in range(self.multiplicity(element)):
-                liste.append(x)
+                liste.append(element)
         return iter(liste)
 
 
